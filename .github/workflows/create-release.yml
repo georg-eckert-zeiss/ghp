@@ -34,8 +34,8 @@ jobs:
       - name: Start release branch
         run: |
           git checkout develop
-          echo Create release branch release/X.X.X
-          git checkout -b release/${{ env.NUGET_VERSION }}
+          echo Create release branch release_branch/X.X.X
+          git checkout -b release_branch/${{ env.NUGET_VERSION }}
           
       - name: Commit and merge changes
         run: |
@@ -51,10 +51,10 @@ jobs:
           git checkout main
           
           echo Merge release into main
-          git merge --no-ff release/${{ env.NUGET_VERSION }}
+          git merge --no-ff release_branch/${{ env.NUGET_VERSION }}
           
           echo Deleting temporary release branch
-          git branch -d release/${{ env.NUGET_VERSION }}
+          git branch -d release_branch/${{ env.NUGET_VERSION }}
           
           echo Tag release commit
           git tag release/${{ env.NUGET_VERSION }}
