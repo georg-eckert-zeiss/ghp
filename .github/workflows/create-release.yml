@@ -1,0 +1,88 @@
+# Create a stable NuGet release. This workflow is manually triggered.
+
+name: Create release
+
+# Run on manual trigger only
+on:
+  workflow_call:https://github.com/georg-eckert-zeiss/ghp
+
+jobs:
+
+  compute-version:
+    uses: ./.github/workflows/gitversion.yml
+    with:
+      is_prerelease: false
+
+  release-flow:
+    needs: compute-version
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.ADMIN_TOKEN }}
+          
+      - name: Output nuget version to variable
+        run: |
+          echo "NUGET_VERSION=${{ needs.compute-version.outputs.package_version }}" >> $GITHUB_ENV
+
+      - name: Setup git config
+        run: |
+          # setup the username and email. We use the 'GitHub Actions Bot'
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          
+      - name: Start release branch
+        run: |
+          git checkout develop
+          git checkout -b release/${{ env.NUGET_VERSION }}
+          
+      - name: Commit and merge changes
+        run: |
+          echo Change version number, commit and push
+          find . -type f -name "*.csproj" -exec sed -i 's#<PackageVersion>[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]#<PackageVersion>${{ env.NUGET_VERSION }}#g' '{}' \;
+          find . -type f -name "*.csproj" -exec sed -i 's#<AssemblyVersion>[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]#<AssemblyVersion>${{ env.NUGET_VERSION }}#g' '{}' \;
+
+          git add *.csproj
+          git commit -m "Raises version number to ${{ env.NUGET_VERSION }}"
+          
+          echo Checkout main
+          git checkout main
+          
+          echo Merge release into main
+          git merge --no-ff release/${{ env.NUGET_VERSION }}
+          
+          echo Deleting temporary release branch
+          git branch -d release/${{ env.NUGET_VERSION }}
+          
+          echo Tag release commit
+          git tag release/${{ env.NUGET_VERSION }}
+          
+          echo Creating support branch
+          git checkout -b support/${{ env.NUGET_VERSION }}
+          
+          echo Checkout develop
+          git checkout develop
+          echo Merge back main into develop
+          git merge --no-ff main
+          
+      - name: Push all branches
+        run: |
+          git checkout main
+          git push origin main --tags
+          git checkout develop
+          git push origin develop
+          git checkout support/${{ env.NUGET_VERSION }}
+          git push origin support/${{ env.NUGET_VERSION }}
+          
+  build-and-publish:
+    needs: release-flow
+    uses: ./.github/workflows/build-and-pack.yml
+    with:
+      configuration: "Release"
+      do_pack: true
+      is_prerelease: false
+      suffix: "stable"
+      publish_target: "nuget.org"
+    secrets: inherit
