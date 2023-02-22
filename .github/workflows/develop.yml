@@ -1,8 +1,7 @@
-# Workflow to build and publish the develop branch
-
 name: Build on develop
 
 on:
+  # Will only be called from other workflows.
   workflow_call:
     inputs:
       do_pack:
@@ -12,6 +11,7 @@ on:
 
 jobs:
   develop:
+    # Run build-and-pack.yml
     uses: ./.github/workflows/build-and-pack.yml
     with:
       configuration: "Debug"
@@ -19,4 +19,5 @@ jobs:
       is_prerelease: true
       suffix: "beta"
       publish_target: "nuget.org"
+    # Pass on secrets to the next workflow.
     secrets: inherit
