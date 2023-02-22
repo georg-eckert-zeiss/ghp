@@ -38,7 +38,7 @@ jobs:
       uses: paulhatch/semantic-version@v5.0.2                          # Run a custom action from there.
       with:
         tag_prefix: "release/"
-        format: "${major}.${minor}.${patch}"                           # Define the format for assembling the version number.
+        version_format: "${major}.${minor}.${patch}"                   # Define the format for assembling the version number.
 
     - name: Append prerelease suffix
       if: inputs.is_prerelease
