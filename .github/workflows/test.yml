@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  workflow_call: # Called by other workflows only.
+    inputs:
+      configuration:
+        description: 'Define whether this is a debug or a release build.'
+        required: true
+        type: string
+
+defaults:
+  run:
+    # Set the default working directory.
+    working-directory: src
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+           
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      # Build. Don't run restore again.
+      run: dotnet build --no-restore -c ${{ inputs.configuration }}
+      
+    - name: Test
+      run: dotnet test --no-build --verbosity normal -c ${{ inputs.configuration }}
