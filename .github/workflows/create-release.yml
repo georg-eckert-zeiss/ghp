@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
           # Invoking workflow has to pass a personal access token with permission to pull/push on the target repo.
-          token: ${{ secrets.PUSH_TO_GITHUB_REPO_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Save NuGet version to a variable for easy access.
         run: |
