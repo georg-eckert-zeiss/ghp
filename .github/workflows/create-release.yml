@@ -12,7 +12,13 @@ on:
         default: false
 
 jobs:
-
+  fail-if-wrong-branch:
+    if: ${{ github.ref_name != 'develop' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if not on develop
+        run: exit 1
+  
   compute-version:
     uses: ./.github/workflows/gitversion.yml
     with:
