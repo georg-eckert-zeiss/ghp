@@ -85,5 +85,4 @@ jobs:
       is_prerelease: false
       suffix: "stable"
       publish_target: "nuget.org"
-      branch: ${{ github.ref_name }}
     secrets: inherit
