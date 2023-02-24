@@ -34,8 +34,8 @@ jobs:
       - name: Fail if minor or major changes exist
         if: ${{ needs.compute-version.outputs.semver_raise_type != 'patch' }}
         run: |
-          echo: Found a version raise of type ${{ needs.compute-version.outputs.semver_raise_type }}.
-          echo: In support branches only patches are allowed. Please remove your changes and try again.
+          echo Found a version raise of type ${{ needs.compute-version.outputs.semver_raise_type }}.
+          echo In support branches only patches are allowed. Please remove your changes and try again.
           exit 1
 
   release-flow:
