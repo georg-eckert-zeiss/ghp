@@ -49,6 +49,7 @@ jobs:
           git checkout main
           echo Looking for last release...
           # Get the last release tag.
+          git describe --tags --abbrev=0 --match=release/*
           $lastVersion = git describe --tags --abbrev=0 --match=release/*
           # Cut off 'release/' and the fix version.
           $supportVersion = $lastVersion -replace '.\d$',''
