@@ -12,17 +12,17 @@ on:
         default: false
 
 jobs:
-  fail-if-wrong-branch:
-    if: ${{ github.ref_name != 'develop' }}
+  check-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Fail if not on develop
+      - name: Check if on develop
+        if: ${{ github.ref_name != 'develop' }}
         run: |
           echo We are on branch ${{ github.ref_name }}. Do run from 'develop' only! Failing...
           exit 1
   
   compute-version:
-    needs: fail-if-wrong-branch
+    needs: check-branch
     uses: ./.github/workflows/gitversion.yml
     with:
       is_prerelease: false
