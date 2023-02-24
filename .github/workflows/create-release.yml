@@ -51,7 +51,7 @@ jobs:
           lastVersion=$( git describe --tags --abbrev=0 --match=release/* )
           # Cut off 'release/' and the fix version.
           supportVersion=${lastVersion/release\//''}
-          supportVersion==${supportVersion%.*}
+          supportVersion=${supportVersion%.*}
           echo Last release was $lastVersion. Creating branch...
           # Create the support branch at the position of the last release tag.
           git checkout -b support/$supportVersion $lastVersion
