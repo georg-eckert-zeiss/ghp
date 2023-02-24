@@ -42,7 +42,7 @@ jobs:
           git config user.email github-actions@github.com
 
       - name: Create support branch
-        if: ${{ ${{ needs.compute-version.outputs.version_type == 'major' }}
+        if: ${{ needs.compute-version.outputs.version_type == 'major' }}
         run: |
           echo This is a new major release. Creating support branch for last release.
           git checkout main
