@@ -28,7 +28,6 @@ jobs:
       is_prerelease: false
       
   check-version-change:
-    if: ${{ needs.compute-version.outputs.semver_raise_type != 'patch' }}
     needs: compute-version
     runs-on: ubuntu-latest
     steps:
