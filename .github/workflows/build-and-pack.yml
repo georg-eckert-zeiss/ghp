@@ -1,3 +1,6 @@
+# Build, test and pack the source code as a nuget.
+# It's assumed that all source files reside in a directory 'src' inside the root of the repository.
+
 name: Build, test & pack
 
 on:
@@ -24,6 +27,11 @@ on:
         description: 'Define the publish target (None/nuget.org).'
         required: true
         type: string
+      branch:
+        description: 'Define the branch to build and pack from. (e.g.: support/1.0)'
+        required: false
+        type: string
+        default: 'develop'
 
 defaults:
   run:
@@ -46,6 +54,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+      with: ${{ inputs.branch }}
            
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
