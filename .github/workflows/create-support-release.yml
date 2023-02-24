@@ -39,7 +39,7 @@ jobs:
           exit 1
 
   release-flow:
-    needs: check-version-change
+    needs: [ check-version-change, compute-version ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
