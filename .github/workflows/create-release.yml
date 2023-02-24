@@ -15,7 +15,7 @@ jobs:
   check-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if on develop
+      - name: Fail if not on develop
         if: ${{ github.ref_name != 'develop' }}
         run: |
           echo We are on branch ${{ github.ref_name }}. Do run from 'develop' only! Failing...
