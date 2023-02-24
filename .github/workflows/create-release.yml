@@ -34,17 +34,16 @@ jobs:
       - name: Save NuGet version to a variable for easy access.
         run: |
           echo "NUGET_VERSION=${{ needs.compute-version.outputs.package_version }}" >> $GITHUB_ENV
-          echo "RAISE_TYPE=${{ needs.compute-version.outputs.version_type }}" >> GITHUB_ENV
+          echo ${{ needs.compute-version.outputs.semver_raise_type }}
 
       - name: Setup git config
         run: |
           # Setup bot user who will own the commits. We use the 'GitHub Actions Bot'.
           git config user.name github-actions
           git config user.email github-actions@github.com
-          echo ${{ env.RAISE_TYPE }}
 
       - name: Create support branch
-        if: ${{ env.RAISE_TYPE == 'major' }}
+        if: ${{ needs.compute-version.outputs.semver_raise_type == 'major' }}
         run: |
           echo This is a new major release. Creating support branch for last release.
           git checkout main
