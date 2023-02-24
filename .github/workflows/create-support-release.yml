@@ -12,8 +12,17 @@ on:
         default: false
 
 jobs:
-
+  fail-if-wrong-branch:
+    if: ${{ !contains(github.ref_name, 'support/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if not on support/*
+        run: |
+          echo We are on branch ${{ github.ref_name }}. Do run from a support branch only! Failing...
+          exit 1
+  
   compute-version:
+    needs: fail-if-wrong-branch
     uses: ./.github/workflows/gitversion.yml
     with:
       is_prerelease: false
