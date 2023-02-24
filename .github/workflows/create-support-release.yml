@@ -26,9 +26,20 @@ jobs:
     uses: ./.github/workflows/gitversion.yml
     with:
       is_prerelease: false
+      
+  fail-on-minor-major-changes:
+    if: ${{ needs.compute-version.outputs.semver_raise_type != 'patch' }}
+    needs: compute-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if minor or major changes exist
+        run: |
+          echo: Found a version raise of type ${{ needs.compute-version.outputs.semver_raise_type }}.
+          echo: In support branches only patches are allowed. Please remove your changes and try again.
+          exit 1
 
   release-flow:
-    needs: compute-version
+    needs: fail-on-minor-major-changes
     runs-on: ubuntu-latest
     permissions:
       contents: write
