@@ -12,34 +12,35 @@ on:
         default: false
 
 jobs:
-  fail-if-wrong-branch:
-    if: ${{ !contains(github.ref_name, 'support/') }}
+  check-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Fail if not on support/*
+        if: ${{ !contains(github.ref_name, 'support/') }}
         run: |
           echo We are on branch ${{ github.ref_name }}. Do run from a support branch only! Failing...
           exit 1
   
   compute-version:
-    needs: fail-if-wrong-branch
+    needs: check-branch
     uses: ./.github/workflows/gitversion.yml
     with:
       is_prerelease: false
       
-  fail-on-minor-major-changes:
+  check-version-change:
     if: ${{ needs.compute-version.outputs.semver_raise_type != 'patch' }}
     needs: compute-version
     runs-on: ubuntu-latest
     steps:
       - name: Fail if minor or major changes exist
+        if: ${{ needs.compute-version.outputs.semver_raise_type != 'patch' }}
         run: |
           echo: Found a version raise of type ${{ needs.compute-version.outputs.semver_raise_type }}.
           echo: In support branches only patches are allowed. Please remove your changes and try again.
           exit 1
 
   release-flow:
-    needs: fail-on-minor-major-changes
+    needs: check-version-change
     runs-on: ubuntu-latest
     permissions:
       contents: write
